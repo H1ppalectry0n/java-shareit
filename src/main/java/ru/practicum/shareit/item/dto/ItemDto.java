@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDto {
+    Long id;
 
     @NotBlank(message = "Name must not be blank")
     String name;
