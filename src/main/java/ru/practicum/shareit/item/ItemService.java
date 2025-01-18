@@ -1,67 +1,105 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.PermissionException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.CommentMapper;
+import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.InMemoryUserStorage;
+import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemService {
-    public final InMemoryItemStorage itemStorage;
-    public final InMemoryUserStorage userStorage;
+    public final ItemRepository itemRepository;
+    public final UserRepository userRepository;
+    public final CommentRepository commentRepository;
+    public final BookingRepository bookingRepository;
 
-    public Item create(long userId, ItemDto dto) {
-        userStorage.findById(userId).orElseThrow(() -> new NotFoundException(
+    public Item create(long userId, Item item) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id=%d not found".formatted(userId)
         ));
 
-        Item item = new Item(null, dto.getName(), dto.getDescription(), dto.getAvailable(), userId);
+        item.setOwner(user);
 
-        return itemStorage.create(item);
+        return itemRepository.save(item);
     }
 
-    public Item update(long userId, long itemId, ItemDto dto) {
-        userStorage.findById(userId).orElseThrow(() -> new NotFoundException(
+    public Item update(long userId, long itemId, Item newItem) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id=%d not found".formatted(userId)
         ));
 
-        Item item = itemStorage.findById(itemId).orElseThrow(
+        Item oldItem = itemRepository.findById(itemId).orElseThrow(
                 () -> new NotFoundException("Item with id=%d not found".formatted(itemId))
         );
 
-        if (dto.getName() != null && !dto.getName().isBlank()) {
-            item.setName(dto.getName());
+        if (newItem.getName() != null && !newItem.getName().isBlank()) {
+            oldItem.setName(newItem.getName());
         }
 
-        if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
-            item.setDescription(dto.getDescription());
+        if (newItem.getDescription() != null && !newItem.getDescription().isBlank()) {
+            oldItem.setDescription(newItem.getDescription());
         }
 
-        if (dto.getAvailable() != null) {
-            item.setAvailable(dto.getAvailable());
+        if (newItem.getIsAvailable() != null) {
+            oldItem.setIsAvailable(newItem.getIsAvailable());
         }
 
-        return itemStorage.update(item);
+        return itemRepository.save(oldItem);
     }
 
-    public Item findById(long itemId) {
-        return itemStorage.findById(itemId).orElseThrow(() -> new NotFoundException(
+    public ItemDto findById(long itemId) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(
                 "Item with id=%d not found".formatted(itemId)
         ));
+
+        LocalDateTime lastBooking = null;
+        LocalDateTime nextBooking = null;
+
+        LocalDateTime now = LocalDateTime.now();
+        List<Booking> bookings = bookingRepository.findByItemIdOrderByStartDateAsc(itemId);
+        log.warn(bookings.toString());
+        log.warn(now.toString());
+        for (Booking booking : bookings) {
+            if (booking.getEndDate().plusSeconds(5).isBefore(now)) {
+                lastBooking = booking.getStartDate();
+            }
+
+            if (booking.getStartDate().isAfter(now)) {
+                nextBooking = booking.getStartDate();
+                break;
+            }
+        }
+
+        ItemDto dto = ItemMapper.toItemDto(item);
+        dto.setLastBooking(lastBooking);
+        dto.setNextBooking(nextBooking);
+        dto.setComments(commentRepository.findByItemId(itemId).stream().map(CommentMapper::toDto).toList());
+
+        return dto;
     }
 
     public List<Item> findByUserId(long userId) {
-        userStorage.findById(userId).orElseThrow(() -> new NotFoundException(
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id=%d not found".formatted(userId)
         ));
 
-        return itemStorage.findByUserId(userId);
+        return itemRepository.findByOwnerId(userId);
     }
 
     public List<Item> searchByName(String namePart) {
@@ -69,6 +107,28 @@ public class ItemService {
             return Collections.emptyList();
         }
 
-        return itemStorage.searchByName(namePart);
+        return itemRepository.findByNameContainingIgnoreCaseAndIsAvailableIsTrue(namePart);
+    }
+
+    public Comment postComment(long userId, CommentDto dto, long itemId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
+                "User with id=%d not found".formatted(userId)
+        ));
+
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(
+                "Item with id=%d not found".formatted(itemId)
+        ));
+
+        bookingRepository.findByBookerIdAndItemIdAndEndDateBefore(user.getId(), item.getId(), LocalDateTime.now()).orElseThrow(() -> new PermissionException(
+                "Post comment not allowed"
+        ));
+
+        Comment comment = new Comment();
+        comment.setText(dto.getText());
+        comment.setAuthor(user);
+        comment.setItem(item);
+        comment.setCreated(LocalDateTime.now());
+
+        return commentRepository.save(comment);
     }
 }
