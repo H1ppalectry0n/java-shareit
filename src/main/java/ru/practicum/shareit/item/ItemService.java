@@ -64,17 +64,22 @@ public class ItemService {
     }
 
     public ItemDto findById(long itemId) {
+        LocalDateTime now = LocalDateTime.now();
+
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(
                 "Item with id=%d not found".formatted(itemId)
         ));
 
+        // что обозначает это поле? Последнее завершенного бронирование или текущее бронирование?
+        // если последнее завершенное, то не понятно почему в тестах требуется, чтобы оно было null
+        // т.к. в тестах отставляют комментарий, но комментарий можно оставить только если бронирование завершено
+        // из чего следует, что поле lastBooking, в смысле последнее завершенное бронирование, не может быть null.
         LocalDateTime lastBooking = null;
         LocalDateTime nextBooking = null;
 
-        LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings = bookingRepository.findByItemIdOrderByStartDateAsc(itemId);
         for (Booking booking : bookings) {
-            if (booking.getEndDate().isBefore(now)) {
+            if (booking.getStartDate().isBefore(now) && booking.getEndDate().isAfter(now)) {
                 lastBooking = booking.getStartDate();
             }
 
