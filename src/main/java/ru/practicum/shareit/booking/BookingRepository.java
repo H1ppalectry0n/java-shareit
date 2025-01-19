@@ -11,20 +11,20 @@ import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    public List<Booking> findByBookerId(long bookerId);
+    List<Booking> findByBookerId(long bookerId);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = :userId AND b.startDate <= :now AND b.endDate >= :now")
-    public List<Booking> findCurrentBookings(Long userId, LocalDateTime now);
+    List<Booking> findCurrentBookings(Long userId, LocalDateTime now);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = :userId AND b.endDate < :now")
-    public List<Booking> findPastBookings(Long userId, LocalDateTime now);
+    List<Booking> findPastBookings(Long userId, LocalDateTime now);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = :userId AND b.startDate > :now")
-    public List<Booking> findFutureBookings(Long userId, LocalDateTime now);
+    List<Booking> findFutureBookings(Long userId, LocalDateTime now);
 
-    public List<Booking> findByBookerIdAndStatus(Long userId, BookingStatus status);
+    List<Booking> findByBookerIdAndStatus(Long userId, BookingStatus status);
 
-    public Optional<Booking> findByBookerIdAndItemIdAndEndDateBefore(long bookerId, long itemId, LocalDateTime before);
+    Optional<Booking> findByBookerIdAndItemIdAndEndDateBefore(long bookerId, long itemId, LocalDateTime before);
 
-    public List<Booking> findByItemIdOrderByStartDateAsc(long itemId);
+    List<Booking> findByItemIdOrderByStartDateAsc(long itemId);
 }

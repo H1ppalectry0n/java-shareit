@@ -20,9 +20,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BookingService {
-    public final UserRepository userRepository;
-    public final ItemRepository itemRepository;
-    public final BookingRepository bookingRepository;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
+    private final BookingRepository bookingRepository;
 
     public Booking create(long userId, BookingCreateDto dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(

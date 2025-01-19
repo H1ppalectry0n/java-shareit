@@ -15,23 +15,23 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDto {
-    Long id;
+    private Long id;
 
     @NotBlank(message = "Name must not be blank")
-    String name;
+    private String name;
 
     @NotBlank(message = "description must not be blank")
-    String description;
+    private String description;
 
     @NotNull(message = "Availability must be specified")
-    Boolean available;
+    private Boolean available;
 
-    User owner;
+    private User owner;
 
-    ItemRequest request;
+    private ItemRequest request;
 
-    LocalDateTime lastBooking;
-    LocalDateTime nextBooking;
+    private LocalDateTime lastBooking;
+    private LocalDateTime nextBooking;
 
-    List<CommentDto> comments;
+    private List<CommentDto> comments;
 }

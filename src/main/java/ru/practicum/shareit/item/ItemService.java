@@ -24,10 +24,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemService {
-    public final ItemRepository itemRepository;
-    public final UserRepository userRepository;
-    public final CommentRepository commentRepository;
-    public final BookingRepository bookingRepository;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
+    private final BookingRepository bookingRepository;
 
     public Item create(long userId, Item item) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
@@ -73,10 +73,8 @@ public class ItemService {
 
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings = bookingRepository.findByItemIdOrderByStartDateAsc(itemId);
-        log.warn(bookings.toString());
-        log.warn(now.toString());
         for (Booking booking : bookings) {
-            if (booking.getEndDate().plusSeconds(5).isBefore(now)) {
+            if (booking.getEndDate().isBefore(now)) {
                 lastBooking = booking.getStartDate();
             }
 

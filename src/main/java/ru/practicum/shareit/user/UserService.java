@@ -9,7 +9,7 @@ import ru.practicum.shareit.user.model.User;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    public final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public User create(User user) {
         if (userRepository.findUserByEmail((user.getEmail())).isPresent()) {
