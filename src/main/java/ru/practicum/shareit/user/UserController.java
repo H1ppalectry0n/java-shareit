@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.validation.CreateUserValidation;
 import ru.practicum.shareit.user.validation.UpdateUserValidation;
 
@@ -22,16 +24,16 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User create(@RequestBody @Validated(CreateUserValidation.class) @Valid User user) {
+    public UserDto create(@RequestBody @Validated(CreateUserValidation.class) @Valid UserDto user) {
         log.trace("create: %s".formatted(user.toString()));
-        return userService.create(user);
+        return UserMapper.toDto(userService.create(UserMapper.toUser(user)));
     }
 
     @PatchMapping("/{userId}")
-    public User update(@RequestBody @Validated(UpdateUserValidation.class) @Valid User user, @PathVariable Long userId) {
+    public UserDto update(@RequestBody @Validated(UpdateUserValidation.class) @Valid UserDto user, @PathVariable Long userId) {
         log.trace("update: %d %s".formatted(userId, user.toString()));
         user.setId(userId);
-        return userService.update(user);
+        return UserMapper.toDto(userService.update(UserMapper.toUser(user)));
     }
 
     @DeleteMapping("/{userId}")
@@ -41,8 +43,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User findById(@PathVariable Long userId) {
+    public UserDto findById(@PathVariable Long userId) {
         log.trace("findById: %d".formatted(userId));
-        return userService.findById(userId);
+        return UserMapper.toDto(userService.findById(userId));
     }
 }

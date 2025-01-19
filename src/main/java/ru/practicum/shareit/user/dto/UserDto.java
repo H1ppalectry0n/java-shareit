@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,7 +12,7 @@ import ru.practicum.shareit.user.validation.UpdateUserValidation;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class UserDto {
     private Long id;
 
     @NotEmpty(message = "User name must not be empty", groups = CreateUserValidation.class)

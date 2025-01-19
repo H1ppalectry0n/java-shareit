@@ -4,44 +4,53 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailsConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.model.User;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    public final InMemoryUserStorage userStorage;
+    private final UserRepository userRepository;
 
     public User create(User user) {
-        if (!userStorage.checkEmailIsFree(user.getEmail())) {
+        if (userRepository.findUserByEmail((user.getEmail())).isPresent()) {
             throw new EmailsConflictException("Email already exist");
         }
 
-        return userStorage.create(user);
+        return userRepository.save(user);
     }
 
-    public User update(User user) {
-        userStorage.findById(user.getId())
+    public User update(User newUser) {
+        User oldUser = userRepository.findById(newUser.getId())
                 .orElseThrow(() -> new NotFoundException(
-                        "User with id=%d not found".formatted(user.getId()))
+                        "User with id=%d not found".formatted(newUser.getId()))
                 );
 
-        if (user.getEmail() != null && !userStorage.checkEmailIsFree(user.getEmail())) {
+        if (newUser.getEmail() != null && userRepository.findUserByEmail((newUser.getEmail())).isPresent()) {
             throw new EmailsConflictException("Email already exist");
         }
 
-        return userStorage.update(user);
+        if (newUser.getName() != null) {
+            oldUser.setName(newUser.getName());
+        }
+
+        if (newUser.getEmail() != null) {
+            oldUser.setEmail(newUser.getEmail());
+        }
+
+        return userRepository.save(oldUser);
     }
 
     public void delete(long id) {
-        userStorage.findById(id)
+        userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "User with id=%d not found".formatted(id))
                 );
 
-        userStorage.delete(id);
+        userRepository.deleteById(id);
     }
 
     public User findById(long id) {
-        return userStorage.findById(id)
+        return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "User with id=%d not found".formatted(id))
                 );
