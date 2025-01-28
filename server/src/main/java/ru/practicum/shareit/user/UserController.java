@@ -22,14 +22,14 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@RequestBody @Validated(CreateUserValidation.class) UserDto user) {
         log.trace("create: %s".formatted(user.toString()));
-        return UserMapper.toDto(userService.create(UserMapper.toUser(user)));
+        return userService.create(UserMapper.toUser(user));
     }
 
     @PatchMapping("/{userId}")
     public UserDto update(@RequestBody @Validated(UpdateUserValidation.class) UserDto user, @PathVariable Long userId) {
         log.trace("update: %d %s".formatted(userId, user.toString()));
         user.setId(userId);
-        return UserMapper.toDto(userService.update(UserMapper.toUser(user)));
+        return userService.update(UserMapper.toUser(user));
     }
 
     @DeleteMapping("/{userId}")
@@ -41,6 +41,6 @@ public class UserController {
     @GetMapping("/{userId}")
     public UserDto findById(@PathVariable Long userId) {
         log.trace("findById: %d".formatted(userId));
-        return UserMapper.toDto(userService.findById(userId));
+        return userService.findById(userId);
     }
 }

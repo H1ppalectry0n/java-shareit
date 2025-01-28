@@ -14,7 +14,7 @@ public class CommentDto {
 
     private Long id;
 
-    @NotNull
+    @NotNull(message = "must not be null")
     private String text;
 
     private String authorName;

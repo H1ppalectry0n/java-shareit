@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
@@ -24,7 +25,7 @@ public class BookingService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
 
-    public Booking create(long userId, BookingCreateDto dto) {
+    public BookingDto create(long userId, BookingCreateDto dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id=%d not found".formatted(userId)
         ));
@@ -40,10 +41,10 @@ public class BookingService {
         Booking booking = BookingMapper.toBooking(dto, user, item);
         booking.setStatus(BookingStatus.WAITING);
 
-        return bookingRepository.save(booking);
+        return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
-    public Booking approved(long userId, long bookingId, boolean approved) {
+    public BookingDto approved(long userId, long bookingId, boolean approved) {
         User user = userRepository.findById(userId).orElseThrow(() -> new PermissionException(
                 "User with id=%d not found".formatted(userId)
         ));
@@ -58,10 +59,10 @@ public class BookingService {
 
         booking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
 
-        return bookingRepository.save(booking);
+        return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
-    public Booking bookingStatus(long userId, long bookingId) {
+    public BookingDto bookingStatus(long userId, long bookingId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id=%d not found".formatted(userId)
         ));
@@ -74,21 +75,26 @@ public class BookingService {
             throw new PermissionException("Only owner of item or booker may see this");
         }
 
-        return booking;
+        return BookingMapper.toDto(booking);
     }
 
-    public List<Booking> bookingOfState(long userId, BookingState state) {
+    public List<BookingDto> bookingOfState(long userId, BookingState state) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id=%d not found".formatted(userId)
         ));
 
         return switch (state) {
-            case ALL -> bookingRepository.findByBookerId(userId);
-            case CURRENT -> bookingRepository.findCurrentBookings(userId, LocalDateTime.now());
-            case PAST -> bookingRepository.findPastBookings(userId, LocalDateTime.now());
-            case FUTURE -> bookingRepository.findFutureBookings(userId, LocalDateTime.now());
-            case WAITING -> bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.WAITING);
-            case REJECTED -> bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.REJECTED);
+            case ALL -> bookingRepository.findByBookerId(userId).stream().map(BookingMapper::toDto).toList();
+            case CURRENT ->
+                    bookingRepository.findCurrentBookings(userId, LocalDateTime.now()).stream().map(BookingMapper::toDto).toList();
+            case PAST ->
+                    bookingRepository.findPastBookings(userId, LocalDateTime.now()).stream().map(BookingMapper::toDto).toList();
+            case FUTURE ->
+                    bookingRepository.findFutureBookings(userId, LocalDateTime.now()).stream().map(BookingMapper::toDto).toList();
+            case WAITING ->
+                    bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.WAITING).stream().map(BookingMapper::toDto).toList();
+            case REJECTED ->
+                    bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.REJECTED).stream().map(BookingMapper::toDto).toList();
         };
     }
 }

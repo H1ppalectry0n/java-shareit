@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EmailsConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -35,7 +36,7 @@ class UserServiceTest {
     void testCreateUser() {
         User user = new User(null, "John Doe", "john@example.com");
 
-        User createdUser = userService.create(user);
+        User createdUser = UserMapper.toUser(userService.create(user));
 
         // Проверяем, что пользователь был добавлен в базу данных
         List<User> users = userRepository.findAll();
@@ -66,7 +67,7 @@ class UserServiceTest {
         User savedUser = userRepository.save(user);
 
         User updatedUser = new User(savedUser.getId(), "John Smith", "john.smith@example.com");
-        User result = userService.update(updatedUser);
+        User result = UserMapper.toUser(userService.update(updatedUser));
 
         // Проверяем, что изменения сохранены в базе данных
         User foundUser = userRepository.findById(savedUser.getId()).orElseThrow();
@@ -97,7 +98,7 @@ class UserServiceTest {
         User user = new User(null, "John Doe", "john@example.com");
         User savedUser = userRepository.save(user);
 
-        User foundUser = userService.findById(savedUser.getId());
+        User foundUser = UserMapper.toUser(userService.findById(savedUser.getId()));
 
         assertNotNull(foundUser);
         assertEquals(savedUser.getId(), foundUser.getId());

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailsConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 @Service
@@ -11,15 +13,15 @@ import ru.practicum.shareit.user.model.User;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User create(User user) {
+    public UserDto create(User user) {
         if (userRepository.findUserByEmail((user.getEmail())).isPresent()) {
             throw new EmailsConflictException("Email already exist");
         }
 
-        return userRepository.save(user);
+        return UserMapper.toDto(userRepository.save(user));
     }
 
-    public User update(User newUser) {
+    public UserDto update(User newUser) {
         User oldUser = userRepository.findById(newUser.getId())
                 .orElseThrow(() -> new NotFoundException(
                         "User with id=%d not found".formatted(newUser.getId()))
@@ -37,7 +39,7 @@ public class UserService {
             oldUser.setEmail(newUser.getEmail());
         }
 
-        return userRepository.save(oldUser);
+        return UserMapper.toDto(userRepository.save(oldUser));
     }
 
     public void delete(long id) {
@@ -49,10 +51,12 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User findById(long id) {
-        return userRepository.findById(id)
+    public UserDto findById(long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "User with id=%d not found".formatted(id))
                 );
+
+        return UserMapper.toDto(user);
     }
 }

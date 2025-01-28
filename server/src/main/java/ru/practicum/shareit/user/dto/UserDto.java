@@ -18,7 +18,7 @@ public class UserDto {
     @NotEmpty(message = "User name must not be empty", groups = CreateUserValidation.class)
     private String name;
 
-    @NotNull(groups = CreateUserValidation.class)
+    @NotNull(groups = CreateUserValidation.class, message = "must not be null")
     @Email(message = "invalid email", groups = {CreateUserValidation.class, UpdateUserValidation.class})
     private String email;
 }

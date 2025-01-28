@@ -51,7 +51,7 @@ public class ItemService {
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
-    public Item update(long userId, long itemId, ItemCreateDto newItem) {
+    public ItemDto update(long userId, long itemId, ItemCreateDto newItem) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id=%d not found".formatted(userId)
         ));
@@ -72,7 +72,7 @@ public class ItemService {
             oldItem.setIsAvailable(newItem.getAvailable());
         }
 
-        return itemRepository.save(oldItem);
+        return ItemMapper.toItemDto(itemRepository.save(oldItem));
     }
 
     public ItemDto findById(long itemId) {
@@ -115,15 +115,15 @@ public class ItemService {
         return itemsMap.values().stream().toList();
     }
 
-    public List<Item> searchByName(String namePart) {
+    public List<ItemDto> searchByName(String namePart) {
         if (namePart.isBlank()) {
             return Collections.emptyList();
         }
 
-        return itemRepository.findByNameContainingIgnoreCaseAndIsAvailableIsTrue(namePart);
+        return itemRepository.findByNameContainingIgnoreCaseAndIsAvailableIsTrue(namePart).stream().map(ItemMapper::toItemDto).toList();
     }
 
-    public Comment postComment(long userId, CommentDto dto, long itemId) {
+    public CommentDto postComment(long userId, CommentDto dto, long itemId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id=%d not found".formatted(userId)
         ));
@@ -142,6 +142,6 @@ public class ItemService {
         comment.setItem(item);
         comment.setCreated(LocalDateTime.now());
 
-        return commentRepository.save(comment);
+        return CommentMapper.toDto(commentRepository.save(comment));
     }
 }
