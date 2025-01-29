@@ -16,25 +16,25 @@ public class ItemRequestController {
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody @Valid ItemRequestDto itemRequestDto) {
-        log.trace(" post item request {}, userId {}", itemRequestDto, userId);
+        log.info(" post item request {}, userId {}", itemRequestDto, userId);
         return itemRequestClient.postRequest(userId, itemRequestDto);
     }
 
     @GetMapping
     public ResponseEntity<Object> findByRequestorId(@RequestHeader("X-Sharer-User-Id") long userId) {
-        log.trace("find by requestor id {}", userId);
+        log.info("find by requestor id {}", userId);
         return itemRequestClient.findByRequestorId(userId);
     }
 
     @GetMapping("/all")
     public ResponseEntity<Object> findAll() {
-        log.trace("find all");
+        log.info("find all");
         return itemRequestClient.findAll();
     }
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> findById(@PathVariable(name = "requestId", required = true) long id) {
-        log.trace("find item request by id {}", id);
+        log.info("find item request by id {}", id);
         return itemRequestClient.findById(id);
     }
 

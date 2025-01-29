@@ -1,9 +1,5 @@
 package ru.practicum.shareit.request.dto;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +11,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,15 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ItemRequestDtoTest {
     private final JacksonTester<ItemRequestDto> json;
 
-    private Validator validator;
-
     private ItemRequestDto itemRequestDto;
 
     @BeforeEach
     void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-
         itemRequestDto = new ItemRequestDto(
                 1L,
                 "Test Description",
@@ -50,20 +40,4 @@ class ItemRequestDtoTest {
         assertThat(jsonContent).extractingJsonPathStringValue("$.description").isEqualTo("Test Description");
         assertThat(jsonContent).extractingJsonPathStringValue("$.created").isEqualTo("2025-01-01T10:00:00");
     }
-
-    @Test
-    void testDeserialization() {
-        Set<ConstraintViolation<ItemRequestDto>> violations = validator.validate(itemRequestDto);
-
-        assertThat(violations.size()).isEqualTo(0);
-    }
-
-    @Test
-    void testDeserializationInvalidData() {
-        itemRequestDto.setDescription("");
-        Set<ConstraintViolation<ItemRequestDto>> violations = validator.validate(itemRequestDto);
-
-        assertThat(violations.size()).isEqualTo(1);
-    }
-
 }

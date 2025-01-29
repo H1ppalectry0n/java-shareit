@@ -21,25 +21,25 @@ public class ItemRequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemRequestDto create(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody ItemRequestDto itemRequestDto) {
-        log.trace("create: %d %s".formatted(userId, itemRequestDto.toString()));
+        log.info("create: %d %s".formatted(userId, itemRequestDto.toString()));
         return itemRequestService.create(userId, itemRequestDto);
     }
 
     @GetMapping
     public List<ItemRequestDto> findByRequestorId(@RequestHeader("X-Sharer-User-Id") long userId) {
-        log.trace("findByRequestorId: %d".formatted(userId));
+        log.info("findByRequestorId: %d".formatted(userId));
         return itemRequestService.findAllByRequestorId(userId);
     }
 
     @GetMapping("/all")
     public List<ItemRequestDto> findAll() {
-        log.trace("findAll");
+        log.info("findAll");
         return itemRequestService.findAll();
     }
 
     @GetMapping("/{requestId}")
     public ItemRequestDto findById(@PathVariable(name = "requestId", required = true) long id) {
-        log.trace("findById: %d".formatted(id));
+        log.info("findById: %d".formatted(id));
         return itemRequestService.findById(id);
     }
 }

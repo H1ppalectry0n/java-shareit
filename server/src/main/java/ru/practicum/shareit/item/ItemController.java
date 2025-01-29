@@ -23,38 +23,38 @@ public class ItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody ItemCreateDto dto) {
-        log.trace("create: %d %s".formatted(userId, dto.toString()));
+        log.info("create: %d %s".formatted(userId, dto.toString()));
         return itemService.create(userId, dto);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId, @RequestBody ItemCreateDto dto) {
-        log.trace("update: %d %d %s".formatted(userId, itemId, dto.toString()));
+        log.info("update: %d %d %s".formatted(userId, itemId, dto.toString()));
         return itemService.update(userId, itemId, dto);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto findById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
-        log.trace("findById: %d %d".formatted(userId, itemId));
+        log.info("findById: %d %d".formatted(userId, itemId));
         return itemService.findById(itemId);
     }
 
     @GetMapping
     public List<ItemDto> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
-        log.trace("findByUserId: %d".formatted(userId));
+        log.info("findByUserId: %d".formatted(userId));
         return itemService.findByUserId(userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchByName(@RequestHeader("X-Sharer-User-Id") long userId, @RequestParam("text") String namePart) {
-        log.trace("searchByName: %d %s".formatted(userId, namePart));
+        log.info("searchByName: %d %s".formatted(userId, namePart));
         return itemService.searchByName(namePart);
     }
 
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto postComment(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody CommentDto dto, @PathVariable long itemId) {
-        log.trace("postComment: %d %s".formatted(userId, dto.toString()));
+        log.info("postComment: %d %s".formatted(userId, dto.toString()));
         return itemService.postComment(userId, dto, itemId);
     }
 }

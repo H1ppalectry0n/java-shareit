@@ -20,25 +20,25 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookingDto create(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody BookingCreateDto dto) {
-        log.trace("create: %d %s".formatted(userId, dto.toString()));
+        log.info("create: %d %s".formatted(userId, dto.toString()));
         return bookingService.create(userId, dto);
     }
 
     @PatchMapping("/{bookingId}")
     public BookingDto approved(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long bookingId, @RequestParam boolean approved) {
-        log.trace("approved: %d %b".formatted(userId, approved));
+        log.info("approved: %d %b".formatted(userId, approved));
         return bookingService.approved(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
     public BookingDto bookingStatus(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long bookingId) {
-        log.trace("bookingStatus: %d %d".formatted(userId, bookingId));
+        log.info("bookingStatus: %d %d".formatted(userId, bookingId));
         return bookingService.bookingStatus(userId, bookingId);
     }
 
     @GetMapping
     public List<BookingDto> bookingOfState(@RequestHeader("X-Sharer-User-Id") long userId, @RequestParam(defaultValue = "ALL") BookingState state) {
-        log.trace("bookingOfState: %d %s".formatted(userId, state));
+        log.info("bookingOfState: %d %s".formatted(userId, state));
         return bookingService.bookingOfState(userId, state);
 
     }

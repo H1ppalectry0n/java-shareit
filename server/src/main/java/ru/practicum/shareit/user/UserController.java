@@ -21,26 +21,26 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@RequestBody @Validated(CreateUserValidation.class) UserDto user) {
-        log.trace("create: %s".formatted(user.toString()));
+        log.info("create: %s".formatted(user.toString()));
         return userService.create(UserMapper.toUser(user));
     }
 
     @PatchMapping("/{userId}")
     public UserDto update(@RequestBody @Validated(UpdateUserValidation.class) UserDto user, @PathVariable Long userId) {
-        log.trace("update: %d %s".formatted(userId, user.toString()));
+        log.info("update: %d %s".formatted(userId, user.toString()));
         user.setId(userId);
         return userService.update(UserMapper.toUser(user));
     }
 
     @DeleteMapping("/{userId}")
     public void delete(@PathVariable Long userId) {
-        log.trace("delete: %d".formatted(userId));
+        log.info("delete: %d".formatted(userId));
         userService.delete(userId);
     }
 
     @GetMapping("/{userId}")
     public UserDto findById(@PathVariable Long userId) {
-        log.trace("findById: %d".formatted(userId));
+        log.info("findById: %d".formatted(userId));
         return userService.findById(userId);
     }
 }

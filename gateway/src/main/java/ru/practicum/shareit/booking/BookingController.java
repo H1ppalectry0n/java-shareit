@@ -25,14 +25,14 @@ public class BookingController {
 			@RequestParam(name = "state", defaultValue = "all") String stateParam) {
 		BookingState state = BookingState.from(stateParam)
 				.orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
-		log.trace("Get booking with state {}, userId={}", stateParam, userId);
+		log.info("Get booking with state {}, userId={}", stateParam, userId);
 		return bookingClient.bookingOfState(userId, state);
 	}
 
 	@PostMapping
 	public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") long userId,
 										 @RequestBody @Valid BookItemRequestDto requestDto) {
-		log.trace("Creating booking {}, userId={}", requestDto, userId);
+		log.info("Creating booking {}, userId={}", requestDto, userId);
 		return bookingClient.create(userId, requestDto);
 	}
 
@@ -40,14 +40,14 @@ public class BookingController {
 	public ResponseEntity<Object> approved(@RequestHeader("X-Sharer-User-Id") long userId,
 										   @PathVariable Long bookingId,
 										   @RequestParam(name = "approved") boolean approved) {
-		log.trace("Approved booking {}, userId={}, approved={}", bookingId, userId, approved);
+		log.info("Approved booking {}, userId={}, approved={}", bookingId, userId, approved);
 		return bookingClient.approved(userId, bookingId, approved);
 	}
 
 	@GetMapping("/{bookingId}")
 	public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") long userId,
 			@PathVariable Long bookingId) {
-		log.trace("Get booking {}, userId={}", bookingId, userId);
+		log.info("Get booking {}, userId={}", bookingId, userId);
 		return bookingClient.getBooking(userId, bookingId);
 	}
 }

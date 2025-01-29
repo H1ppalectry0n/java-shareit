@@ -1,7 +1,7 @@
 package ru.practicum.shareit.request.mapper;
 
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotNull;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ItemRequestMapper {
 
-    public static ItemRequestDto toDto(@NotNull ItemRequest itemRequest, @Nullable List<Item> items) {
+    public static ItemRequestDto toDto(@Nonnull ItemRequest itemRequest, @Nullable List<Item> items) {
         return new ItemRequestDto(
                 itemRequest.getId(),
                 itemRequest.getDescription(),

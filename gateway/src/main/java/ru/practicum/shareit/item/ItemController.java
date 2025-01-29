@@ -17,37 +17,37 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody @Valid ItemCreateDto dto) {
-        log.trace("create item {}, userId {}", dto, userId);
+        log.info("create item {}, userId {}", dto, userId);
         return itemClient.postItem(userId, dto);
     }
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> update(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId, @RequestBody @Valid ItemCreateDto dto) {
-        log.trace("update item {}, userId {}, item id {}", dto, userId, itemId);
+        log.info("update item {}, userId {}, item id {}", dto, userId, itemId);
         return itemClient.updateItem(userId, itemId, dto);
     }
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> findById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
-        log.trace("find item by id {}, userId {}", itemId, userId);
+        log.info("find item by id {}, userId {}", itemId, userId);
         return itemClient.findByItemId(userId, itemId);
     }
 
     @GetMapping
     public ResponseEntity<Object> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
-        log.trace("find items by userId {}", userId);
+        log.info("find items by userId {}", userId);
         return itemClient.findByUserId(userId);
     }
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchByName(@RequestHeader("X-Sharer-User-Id") long userId, @RequestParam("text") String namePart) {
-        log.trace("search items by name {}, userId {}", namePart, userId);
+        log.info("search items by name {}, userId {}", namePart, userId);
         return itemClient.searchByPostName(userId, namePart);
     }
 
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> postComment(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody @Valid CommentDto dto, @PathVariable long itemId) {
-        log.trace("post comment {}, userId {}, itemId {}", dto, userId, itemId);
+        log.info("post comment {}, userId {}, itemId {}", dto, userId, itemId);
         return itemClient.postComment(userId, itemId, dto);
     }
 

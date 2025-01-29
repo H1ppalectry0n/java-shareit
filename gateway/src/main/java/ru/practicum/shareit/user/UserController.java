@@ -20,25 +20,25 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestBody @Validated(CreateUserValidation.class) @Valid UserDto userDto) {
-        log.trace("create user {}", userDto.toString());
+        log.info("create user {}", userDto.toString());
         return userClient.create(userDto);
     }
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> update(@RequestBody @Validated(UpdateUserValidation.class) @Valid UserDto userDto, @PathVariable Long userId) {
-        log.trace("update user id = {}, {}", userId, userDto);
+        log.info("update user id = {}, {}", userId, userDto);
         return userClient.update(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> delete(@PathVariable long userId) {
-        log.trace("delete user id = {}", userId);
+        log.info("delete user id = {}", userId);
         return userClient.delete(userId);
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<Object> findById(@PathVariable long userId) {
-        log.trace("find user by id {}", userId);
+        log.info("find user by id {}", userId);
         return userClient.findById(userId);
     }
 

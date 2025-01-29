@@ -1,8 +1,5 @@
 package ru.practicum.shareit.item.dto;
 
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -17,13 +14,6 @@ public class CommentDtoTest {
 
     @Autowired
     private JacksonTester<CommentDto> json;
-
-    private final Validator validator;
-
-    public CommentDtoTest() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        this.validator = factory.getValidator();
-    }
 
     @Test
     void testSerialization() throws Exception {
@@ -47,24 +37,5 @@ public class CommentDtoTest {
         assertThat(commentDto.getText()).isEqualTo("Test text");
         assertThat(commentDto.getAuthorName()).isEqualTo("Author");
         assertThat(commentDto.getCreated()).isEqualTo(LocalDateTime.of(2023, 9, 16, 12, 0));
-    }
-
-    @Test
-    void testValidationSuccess() {
-        CommentDto commentDto = new CommentDto(1L, "Valid text", "Author", LocalDateTime.now());
-
-        var violations = validator.validate(commentDto);
-
-        assertThat(violations).isEmpty();
-    }
-
-    @Test
-    void testValidationFailure() {
-        CommentDto commentDto = new CommentDto(1L, null, "Author", LocalDateTime.now());
-
-        var violations = validator.validate(commentDto);
-
-        assertThat(violations).isNotEmpty();
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("must not be null");
     }
 }
